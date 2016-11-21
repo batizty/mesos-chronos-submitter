@@ -57,6 +57,18 @@
       <version>1.2.10</version>
     </dependency>
 
+    <!--<dependency>-->
+      <!--<groupId>org.json4s</groupId>-->
+      <!--<artifactId>json4s-jackson_${scala.version}</artifactId>-->
+      <!--<version>3.6</version>-->
+    <!--</dependency>-->
+
+    <!--<dependency>-->
+      <!--<groupId>org.json4s</groupId>-->
+      <!--<artifactId>json4s-native_${scala.version}</artifactId>-->
+      <!--<version>3.6</version>-->
+    <!--</dependency>-->
+
     <!-- Test -->
     <dependency>
       <groupId>junit</groupId>

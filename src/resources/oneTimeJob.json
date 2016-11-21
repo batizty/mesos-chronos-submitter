@@ -1,0 +1,35 @@
+{
+  "name": "",
+  "description": "",
+  "command": "",
+  "arguments": [],
+  "shell": false,
+  "epsilon": "PT5M",
+  "executor": "",
+  "executorFlags": "",
+  "retries": 2,
+  "owner": "",
+  "ownerName": "",
+  "async": false,
+  "cpus": 0.1,
+  "mem": 1024,
+  "disk": 1024,
+  "disabled": false,
+  "uris": [],
+  "schedule": "",
+  // ISO 8601 repeating schedule for this job. If specified, parents must not be specified.	-
+  "scheduleTimeZone": "",
+  // The time zone for the given schedule, specified in the tz database format.	-
+  "parents": [],
+  // An array of parent jobs for a dependent job. If specified, schedule must not be specified.	-
+  "runAsUser": "",
+  // Mesos will run the job as this user, if specified.	--user
+  "container": "",
+  // This contains the subfields for the Docker container: type (required), image (required), forcePullImage (optional), network (optional), and volumes (optional).	-
+  "dataJob": false,
+  //	Toggles whether the job tracks data (number of elements processed)	false
+  "environmentVariables": {},
+  //An array of environment variables passed to the Mesos executor. For Docker containers, these are also passed to Docker using the -e flag.	-
+  "constraints": {}
+  //Control where jobs run. Each constraint is compared against the attributes of a Mesos slave. See Constraints.
+}
