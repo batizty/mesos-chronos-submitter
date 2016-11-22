@@ -1,9 +1,5 @@
 package com.weibo.datasys.conf
 
-import org.json4s._
-import org.json4s.native.JsonMethods._
-import org.json4s.native.Serialization
-
 /**
   * Created by tuoyu on 11/21/16.
   * Job中的环境设置代码，分为
@@ -16,8 +12,6 @@ object BaseConf {
   val default_cpu_value: Double = 0.1
   val default_mem_value: Long = 1024
   val default_disk_value: Long = 1024
-
-  implicit val formats = Serialization.formats(NoTypeHints)
 
   val example: BaseConf = DataStrategyConf("", "", "")
   def getExampleConf: String = example.getFullConf
@@ -35,40 +29,49 @@ trait BaseConf {
   /* 当前作业的依赖关系，如果配置，则cron内容不起作用 */
   def dependencies: Set[String] = Set()
 
-  // Option
-  /* 作业失败之后的重试次数 */
-  def retries: Int = BaseConf.default_retries_times
-  /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
-  def retryInterval: Int = BaseConf.default_retry_interval
+  /* 作业执行的用户 */
+  def user: Option[String] = None
+
+  /* 作业执行的目标机器 */
+  def host: Option[String] = None
 
   /* 运行的时刻的参数配置 */
 
-  def cpus: Double = BaseConf.default_cpu_value
-  /* 作业分配内存默认值，单位 MB */
-  def mem : Long = BaseConf.default_mem_value
-  /* 作业分配磁盘默认值，单位 MB */
-  def disk: Long = BaseConf.default_disk_value
-
-  /* 作业执行的用户 */
-  def user: Option[String] = None
-  /* 作业执行的目标机器 */
-  def host: Option[String] = None
   /* 作业执行URI资源 */
   def uris: Set[String] = Set()
+
   /* 作业描述 */
   def description: Option[String]
 
   // 必须要实现的函数，方便对不同的作业进行解析
   def parseCron: String
+
   def parseCommand: String
+
   def checkValid: (Boolean, Option[String]) = {
     // TODO
     ???
   }
 
+  def getFullConf: String = {
+    s"""{
+          ${getRequiredExample},
+
+          // 如果提交的为单次作业，请跳到可选填部分修改
+
+          // 如果提交的为周期性作业，并且无依赖，请填写，语法请查看crontab说明
+          "cron" : "",
+
+          // 如果提交的为周期性作业，并且依赖于某个之前提交的作业，之前填写的调度时间将失去效果
+          "dependencies" : "",
+
+          ${getAvailableExample}
+    }"""
+  }
 
   private def getRequiredExample: String = {
-    s"""  // 必须要填写的内容
+    s"""
+          // 必须要填写的内容
           // 你的邮箱前缀
           "owner"       : "",
           // 作业名称，可以作为依赖存在，被其他任务所依赖
@@ -105,22 +108,20 @@ trait BaseConf {
     """
   }
 
-  def getFullConf: String = {
-    s"""{
-          ${getRequiredExample},
+  // Option
+  /* 作业失败之后的重试次数 */
+  def retries: Int = BaseConf.default_retries_times
 
-          // 如果提交的为单次作业，请跳到可选填部分修改
+  /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
+  def retryInterval: Int = BaseConf.default_retry_interval
 
-          // 如果提交的为周期性作业，并且无依赖，请填写，语法请查看crontab说明
-          "cron" : "",
+  def cpus: Double = BaseConf.default_cpu_value
 
-          // 如果提交的为周期性作业，并且依赖于某个之前提交的作业，之前填写的调度时间将失去效果
-          "dependencies" : "",
+  /* 作业分配内存默认值，单位 MB */
+  def mem: Long = BaseConf.default_mem_value
 
-          ${getAvailableExample}
-    }"""
-  }
-
+  /* 作业分配磁盘默认值，单位 MB */
+  def disk: Long = BaseConf.default_disk_value
 
   def generateJobConf: String = {
     ""
