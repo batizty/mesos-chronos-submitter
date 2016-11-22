@@ -1,83 +1,59 @@
 package com.weibo.datasys.submitter
 
-import com.weibo.datasys.jobs.{OneTimeJobConf, JobConf}
-import org.apache.commons.cli._
+import com.weibo.datasys.conf.BaseConf
+import com.weibo.datasys.jobs.{JobConf, OneTimeJobConf}
+
+//import org.slf4j.LoggerFactory
+
+import org.json4s._
+import org.json4s.native.JsonMethods._
+
 
 /**
   * Created by tuoyu on 11/21/16.
   */
 object Main {
+//  val logger = LoggerFactory.getLogger("OfflineSubmitter")
 
-  val option_generate_example_short = "g"
-  val option_generate_example_long  = "generate_example"
+  val default_conf_file: String = ".conf"
+
+  val option_generate_example_short: String = "g"
+  val option_generate_example_long: String = "generate_example"
+
+//  def createConf(p: Path): String = {
+//    ""
+//  }
+//
+//  def readConf(p: Path): String = {
+//    ""
+//  }
+//
+//  def getCurrentDir: String = {
+//    new File(".").getCanonicalPath
+//  }
 
 
   def main(args: Array[String]): Unit = {
-//    val parser: CommandLineParser = new BasicParser
+    println(s" example conf = ${BaseConf.getExampleConf}")
+//    case class Student(name: String, age: Int, number: Array[Int], male: Option[String])
+//    val t=parse(""" { "name" : "tom","age":23,"number":[1,2,3,4], "male":"male" } """)
+//    println(t)
+//
+//    val s = t.extract[Student]
+//    println(s" s = $s")
+//    println(t.extract[Student])
 
-//    val options: Options = new Options
-
-//    options.addOption(
-//      OptionBuilder
-//          .withLongOpt(option_generate_example_long)
-//      option_generate_example_short,
-//      option_generate_example_long,
-//      true,
-//      "Generate example Type, default is " + processor_type)
+//    val file_path = Path(getCurrentDir + "/" + default_conf_file)
+//    logger.info(s"current work directory : ${file_path.toString}")
+//    val conf_str = if (file_path.exists == false)
+//        createConf(file_path)
+//      else
+//        readConf(file_path)
+//    logger.info(conf_str)
 //
-//    options.addOption(
-//      OPTION_SHORT_REGION,
-//      OPTION_LONG_REGION,
-//      true,
-//      "Process region, default is " + processor_region)
-//
-//    options.addOption(
-//      OptionBuilder
-//        .withLongOpt(OPTION_CONFIG_FILE_NAME)
-//        .withDescription("Config file for this processor program")
-//        .hasArg
-//        .withArgName(OPTION_CONFIG_FILE_NAME)
-//        .create)
-//
-//    options.addOption(
-//      OptionBuilder
-//        .withLongOpt(OPTION_DARWIN_MBLOG_SHOW_BATCH_URL)
-//        .withDescription("Darwin interface URL for mblog show batch")
-//        .hasArg
-//        .withArgName(OPTION_DARWIN_MBLOG_SHOW_BATCH_URL)
-//        .create)
-//
-//    options.addOption(
-//      OptionBuilder
-//        .withLongOpt(OPTION_DARWIN_GENERAL_DOC_SHOW_URL)
-//        .withDescription("Darwin interface URL for general doc show batch")
-//        .hasArg
-//        .withArgName(OPTION_DARWIN_GENERAL_DOC_SHOW_URL)
-//        .create)
-//
-//    options.addOption(
-//      OptionBuilder
-//        .withLongOpt(OPTION_DARWIN_GENERAL_DOC_PUT_URL)
-//        .withDescription("Darwin interface URL for general doc put batch")
-//        .hasArg.withArgName(OPTION_DARWIN_GENERAL_DOC_PUT_URL)
-//        .create)
-//
-//    options.addOption(
-//      OptionBuilder
-//        .withLongOpt(OPTION_REDIS_CLUSTER_CONFIG)
-//        .withDescription("Redis Cluster Configs, the format should be\n" + "\"{ \"master_host1:master_port1\":\"slave_host1:slave_port1\",\n" + "    \"master_host2:master_port2\":\"slave_host2:slave_port2\",\n" + "     ...\n" + "\"}")
-//        .hasArg
-//        .withArgName(OPTION_REDIS_CLUSTER_CONFIG)
-//        .create)
-//
-//    val hf: HelpFormatter = new HelpFormatter
-
-    val s = OneTimeJobConf.toString()
-    val exp = OneTimeJobConf.getExampleConf
-    val z: JobConf = OneTimeJobConf.emptyObject
-    println(s" s = $s")
-    println(s" example = ${exp}")
-    println(s" full conf = ${z.getFullConf}")
-    ()
+//    val (ok: Boolean, err: Option[String]) = JobConf.checkValid(conf_str)
+//    if (ok == false) {
+//      sys.error(err.getOrElse("error"))
+//    }
   }
 }

@@ -183,9 +183,13 @@ trait JobConf {
        ${getAvailableExampleConf}
     }""".stripMargin
   }
-
 }
 
+object JobConf {
+  def checkValid(conf: String): (Boolean, Option[String]) = {
+    (false, None)
+  }
+}
 
 /**
   * 单次运行作业类型
