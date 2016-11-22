@@ -4,3 +4,5 @@ mesos-chronos-submitter.iml
 target
 target/*
 .idea
+
+.conf
