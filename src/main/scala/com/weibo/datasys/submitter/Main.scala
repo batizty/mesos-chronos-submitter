@@ -20,12 +20,13 @@ object Main {
   val option_generate_example_long: String = "generate_example"
 
   def main(args: Array[String]): Unit = {
-    val _debug_mode = (args.length > 1
+    implicit val _debug_mode = (args.length > 0
       && StringUtils.isNotBlank(args(0))
       && args(0).toLowerCase() == option_debug_mode)
 
-    if (_debug_mode)
+    if (_debug_mode) {
       MyLogging.debug("debug mode is open")
+    }
 
     val path = new File(getConfPath)
     if (false == path.exists()) {
@@ -34,6 +35,8 @@ object Main {
       MyLogging.info(s"Please check .conf file and modify it firstly")
       sys.exit(-1)
     }
+
+    MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
 
   }
 

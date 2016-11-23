@@ -18,25 +18,21 @@ object MyLogging {
     printOutMessage(LOG_LEVEL_INFO, String.format(fmt, info))
   }
 
-  def debug(debug: String): Unit = {
-    printOutMessage(LOG_LEVEL_DEBUG, debug)
-  }
-
-  def debug(fmt: String, debug: String): Unit = {
-    printOutMessage(LOG_LEVEL_DEBUG, String.format(fmt, debug))
+  def debug(debug: String)(implicit _debug_mode: Boolean = false): Unit = {
+    if (_debug_mode)
+      printOutMessage(LOG_LEVEL_DEBUG, debug)
   }
 
   def error(err: String): Unit = {
     printOutMessage(LOG_LEVEL_ERROR, err)
   }
 
-  def error(fmt: String, err: String): Unit = {
-    printOutMessage(LOG_LEVEL_ERROR, String.format(fmt, err))
-  }
-
-
   private def printOutMessage(prefix: String, s: String): Unit = {
     val date = DateTime.now.toString("YYYY-MM-dd HH:mm:SS")
     println(s"$date $prefix : $s")
+  }
+
+  def error(fmt: String, err: String): Unit = {
+    printOutMessage(LOG_LEVEL_ERROR, String.format(fmt, err))
   }
 }
