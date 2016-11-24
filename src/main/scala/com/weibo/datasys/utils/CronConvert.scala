@@ -10,7 +10,7 @@ import scala.util.{Success, Try}
   * Created by tuoyu on 11/23/16.
   */
 object CronConvert {
-  implicit val _debug_mode: Boolean = true
+  implicit val _debug_mode: Boolean = false
 
   val SYMBOL_STAR = "*"
   val SYMBOL_EVERY = "/"
@@ -45,9 +45,8 @@ object CronConvert {
 
   /**
     * 完成cron作业的时间设置的自动转换，如果无法转换，就给个错误
-    *
     * @param cron
-    * @return
+    * @return List[(DateTime, Long)]
     */
   def convert(cron: String): List[(DateTime, Long)] = {
     MyLogging.debug(s"raw cron string = $cron")
