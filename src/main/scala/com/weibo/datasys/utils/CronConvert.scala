@@ -10,7 +10,7 @@ import scala.util.{Success, Try}
   * Created by tuoyu on 11/23/16.
   */
 object CronConvert {
-  implicit val _debug_mode: Boolean = false
+  implicit val _debug_mode: Boolean = true
 
   val SYMBOL_STAR = "*"
   val SYMBOL_EVERY = "/"
@@ -48,10 +48,10 @@ object CronConvert {
     * @param cron
     * @return List[(DateTime, Long)]
     */
-  def convert(cron: String): List[(DateTime, Long)] = {
+  def convert(cron: String): List[ISOPeriodTime] = {
     MyLogging.debug(s"raw cron string = $cron")
 
-    var result: List[(DateTime, Long)] = List.empty
+    var result: List[ISOPeriodTime] = List.empty
     val arr = cron.split("\\s+")
     if (arr.size > 6) {
       val List(min, hour, day, dayOfMonth, weekday) = arr.toList.take(5)
@@ -83,7 +83,7 @@ object CronConvert {
           }.getOrElse(0))
           .getOrElse(0)
         wk_list.map { wd =>
-          result = (getLastWeekDay(wd, hh, mm), interval) :: result
+          result = ISOPeriodTime(getLastWeekDay(wd, hh, mm), interval) :: result
         }
       } else {
         if (cron_map.get(CRON_KEY_HOUR).getOrElse(SYMBOL_STAR) == SYMBOL_STAR
@@ -99,7 +99,8 @@ object CronConvert {
                   Try {
                     number.toInt
                   } match {
-                    case Success(i) => result = (DateTime.now(), i * SECONDS_OF_MIN) :: result
+                    case Success(i) =>
+                      result = ISOPeriodTime(DateTime.now(), i * SECONDS_OF_MIN) :: result
                     case _ => ()
                   }
                 case _ =>
@@ -107,11 +108,11 @@ object CronConvert {
                   val hours = getListValues(cron_map.get(CRON_KEY_HOUR))
                   if (mins.size > 1) {
                     mins map { mmm =>
-                      result = (getLastHourMin(mmm), SECONDS_OF_HOUR) :: result
+                      result = ISOPeriodTime(getLastHourMin(mmm), SECONDS_OF_HOUR) :: result
                     }
                   } else if (mins.size == 1 && hours.size == 0) {
                     mins map { mmm =>
-                      result = (getLastHourMin(mmm), SECONDS_OF_HOUR) :: result
+                      result = ISOPeriodTime(getLastHourMin(mmm), SECONDS_OF_HOUR) :: result
                     }
                   }
               }
@@ -125,7 +126,8 @@ object CronConvert {
                   Try {
                     number.toInt
                   } match {
-                    case Success(i) => result = (DateTime.now(), i * SECONDS_OF_HOUR) :: result
+                    case Success(i) =>
+                      result = ISOPeriodTime(DateTime.now(), i * SECONDS_OF_HOUR) :: result
                     case _ => ()
                   }
                 case _ =>
@@ -139,7 +141,7 @@ object CronConvert {
                           x.toInt
                         }.getOrElse(0))
                         .getOrElse(0)
-                      result = (getLastDayHour(hhh, mm), SECONDS_OF_DAY) :: result
+                      result = ISOPeriodTime(getLastDayHour(hhh, mm), SECONDS_OF_DAY) :: result
                     }
                   }
               }
@@ -148,7 +150,7 @@ object CronConvert {
         }
       }
     }
-    result foreach { x => showResult(x._1, x._2) }
+    result foreach { x => MyLogging.debug(x.toString) }
     result
   }
 
@@ -193,4 +195,23 @@ object CronConvert {
       } flatten
     }.getOrElse(List.empty)
   }
+}
+
+case class ISOPeriodTime(
+                          start: DateTime,
+                          interval: Long,
+                          count: Int = -1) {
+  override def toString: String = {
+    var str = s"start time = $start interval = $interval"
+    if (count > 0) {
+      str += s" count = $count"
+    }
+    str //+ " scheduler string = " + toScheduleString
+  }
+
+  def toScheduleString: String = {
+    val r = if (count > 0) s"R$count" else "R"
+    s"$r/$start/PT${interval}S"
+  }
+
 }
