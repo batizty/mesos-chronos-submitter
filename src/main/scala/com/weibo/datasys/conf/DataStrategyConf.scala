@@ -26,7 +26,7 @@ case class DataStrategyConf (
                               override val description: Option[String] = None
                             ) extends BaseConf {
   override def parseCommand: String = "echo 'hi'"
-  override def parseCron: String = s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/"
+  override def parseCron: String = s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s"
   override def jobDescription: String = "TODO parseDescription"
   override def getConstrains: Set[String] = Set()
   override def checkValid: (Boolean, Option[String]) = super.checkValid

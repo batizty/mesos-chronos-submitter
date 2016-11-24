@@ -23,7 +23,7 @@ case class Job(
                 disabled: Boolean = false,
                 runAsUser: String,
                 schedule: String,
-                scheduleTimeZone: String = "",
+//                scheduleTimeZone: String = "",
                 highPriority: Boolean = false,
                 arguments: Set[String] = Set(),
                 uris: Set[String] = Set(),

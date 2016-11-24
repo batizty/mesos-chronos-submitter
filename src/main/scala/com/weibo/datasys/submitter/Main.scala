@@ -47,14 +47,31 @@ object Main {
     MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
 
     val t = DataStrategyConf(
-      "test",
+      "xxx_003",
       "echo 'hi'",
       "tuoyu",
       user = Some("root")
     )
 
     println(s" json = ${Job(t).toString}")
+    val t2: String =
+      """{
+          "name": "50",
+          "command": "echo 'hi'",
+          "shell": true,
+          "epsilon": "PT1M",
+          "executor": "",
+          "executorFlags": "",
+          "retries": 2,
+          "owner": "tuoyu@staff.weibo.com",
+          "async": false,
+          "cpus": 1.0,
+          "schedule": "R/2014-03-08T20:00:00.000Z/PT5M",
+          "constraints": []
+        }
+      """
 
+    Submitter.post(Job(t).toString)
   }
 
   def createConf(): Boolean = {
