@@ -35,6 +35,8 @@ trait BaseConf {
   /* 作业执行的目标机器 */
   def host: Option[String] = None
 
+  def getConstrains: Set[String]
+
   /* 运行的时刻的参数配置 */
 
   /* 作业执行URI资源 */
@@ -42,6 +44,8 @@ trait BaseConf {
 
   /* 作业描述 */
   def description: Option[String]
+
+  def jobDescription: String
 
   // 必须要实现的函数，方便对不同的作业进行解析
   def parseCron: String
@@ -114,6 +118,7 @@ trait BaseConf {
 
   /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
   def retryInterval: Int = BaseConf.default_retry_interval
+  def epsilon: String = s"PT${retryInterval}S"
 
   def cpus: Double = BaseConf.default_cpu_value
 
@@ -122,9 +127,5 @@ trait BaseConf {
 
   /* 作业分配磁盘默认值，单位 MB */
   def disk: Long = BaseConf.default_disk_value
-
-  def generateJobConf: String = {
-    ""
-  }
 }
 

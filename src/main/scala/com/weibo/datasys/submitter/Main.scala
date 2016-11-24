@@ -3,7 +3,8 @@ package com.weibo.datasys.submitter
 
 import java.io.{File, PrintWriter}
 
-import com.weibo.datasys.conf.BaseConf
+import com.weibo.datasys.conf.{DataStrategyConf, BaseConf}
+import com.weibo.datasys.jobs.Job
 import com.weibo.datasys.utils.MyLogging
 import org.apache.commons.lang.StringUtils
 
@@ -12,12 +13,18 @@ import org.apache.commons.lang.StringUtils
   * Created by tuoyu on 11/21/16.
   */
 object Main {
-  val option_debug_mode = "-d"
 
   val default_conf_file: String = ".conf"
 
   val option_generate_example_short: String = "g"
   val option_generate_example_long: String = "generate_example"
+
+  val option_debug_mode = "-d"
+  val option_command: String = "--command"
+  val option_generate_example: String = "--generate_example"
+  val option_owner: String = "--owner"
+  val option_name: String = "--name"
+
 
   def main(args: Array[String]): Unit = {
     implicit val _debug_mode = (args.length > 0
@@ -33,10 +40,20 @@ object Main {
       MyLogging.info(s"Generate Conf file for this job dir = ${path.toString}")
       createConf()
       MyLogging.info(s"Please check .conf file and modify it firstly")
+      MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
       sys.exit(-1)
     }
 
     MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
+
+    val t = DataStrategyConf(
+      "test",
+      "echo 'hi'",
+      "tuoyu",
+      user = Some("root")
+    )
+
+    println(s" json = ${Job(t).toString}")
 
   }
 

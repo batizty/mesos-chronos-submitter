@@ -23,9 +23,15 @@ case class DataSysConf (
                          override val uris: Set[String] = Set(),
                          override val description: Option[String]
                        ) extends BaseConf {
-  override def parseCommand: String = ???
+  def parseCommand: String = "TODO parseCommand"
 
-  override def parseCron: String = ???
+  override def parseCron: String = "TODO parseCron"
 
   override def checkValid: (Boolean, Option[String]) = super.checkValid
+
+  // TODO
+  override def getConstrains: Set[String] = Set()
+
+  override def jobDescription: String = ""
+
 }

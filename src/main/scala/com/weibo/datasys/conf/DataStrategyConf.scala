@@ -1,5 +1,7 @@
 package com.weibo.datasys.conf
 
+import org.joda.time.DateTime
+
 /**
   * Created by tuoyu on 11/22/16.
   */
@@ -23,7 +25,9 @@ case class DataStrategyConf (
                               override val uris: Set[String] = Set(),
                               override val description: Option[String] = None
                             ) extends BaseConf {
-  override def parseCommand: String = ???
-  override def parseCron: String = ???
+  override def parseCommand: String = "echo 'hi'"
+  override def parseCron: String = s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/"
+  override def jobDescription: String = "TODO parseDescription"
+  override def getConstrains: Set[String] = Set()
   override def checkValid: (Boolean, Option[String]) = super.checkValid
 }
