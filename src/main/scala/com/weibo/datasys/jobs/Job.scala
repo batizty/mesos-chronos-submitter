@@ -1,7 +1,6 @@
 package com.weibo.datasys.jobs
 
 import com.weibo.datasys.conf.BaseConf
-import org.json4s.{NoTypeHints, ShortTypeHints}
 import org.json4s.native.Serialization
 
 
@@ -23,21 +22,25 @@ case class Job(
                 disabled: Boolean = false,
                 runAsUser: String,
                 schedule: String,
-//                scheduleTimeZone: String = "",
                 highPriority: Boolean = false,
                 arguments: Set[String] = Set(),
                 uris: Set[String] = Set(),
                 environment: Set[String] = Set(),
-                constrains: Set[String] = Set()) {
+                constrains: Set[String] = Set(),
+                parents: Set[String] = Set()
+              ) {
   import org.json4s._
   implicit val format = Serialization.formats(NoTypeHints)
 
   override def toString = {
     Serialization.writePretty(this)
   }
+
   def toJson: String = {
-   Serialization.write(this)
+    Serialization.write(this)
   }
+
+  def withDependencies: Boolean = parents.nonEmpty
 }
 
 

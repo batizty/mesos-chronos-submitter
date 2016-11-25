@@ -3,37 +3,34 @@ package com.weibo.datasys.submitter
 
 import java.io.{File, PrintWriter}
 
-import com.weibo.datasys.conf.{DataStrategyConf, BaseConf}
+import com.weibo.datasys.conf.{BaseConf, DataStrategyConf}
 import com.weibo.datasys.jobs.Job
 import com.weibo.datasys.utils.MyLogging
-import org.apache.commons.lang.StringUtils
 
 
 /**
   * Created by tuoyu on 11/21/16.
   */
 object Main {
-
-  val default_conf_file: String = ".conf"
-
-  val option_generate_example_short: String = "g"
-  val option_generate_example_long: String = "generate_example"
-
-  val option_debug_mode = "-d"
-  val option_command: String = "--command"
-  val option_generate_example: String = "--generate_example"
-  val option_owner: String = "--owner"
-  val option_name: String = "--name"
-
-
   def main(args: Array[String]): Unit = {
-    implicit val _debug_mode = (args.length > 0
-      && StringUtils.isNotBlank(args(0))
-      && args(0).toLowerCase() == option_debug_mode)
+    lazy val cmd = new CommandLineConf(args)
+
+    if (cmd.help()) {
+      cmd.printHelp()
+      sys.exit(0)
+    }
+
+    implicit val _debug_mode: Boolean = cmd.debug_mode()
 
     if (_debug_mode) {
       MyLogging.debug("debug mode is open")
     }
+
+    MyLogging.debug(s"parse cmd command = ${cmd.command}")
+    MyLogging.debug(s"parse cmd conf_file = ${cmd.conf_file}")
+    MyLogging.debug(s"parse cmd owner = ${cmd.owner}")
+    MyLogging.debug(s"parse cmd name = ${cmd.name}")
+    MyLogging.debug(s"parse cmd command = ${cmd.command}")
 
     val path = new File(getConfPath)
     if (false == path.exists()) {
@@ -45,6 +42,7 @@ object Main {
     }
 
     MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
+    sys.exit(0)
 
     val t = DataStrategyConf(
       "xxx_003",
@@ -71,7 +69,7 @@ object Main {
         }
       """
 
-    Submitter.post(Job(t).toString)
+    Submitter.post(Job(t))
   }
 
   def createConf(): Boolean = {
@@ -90,7 +88,7 @@ object Main {
   }
 
   def getConfPath: String = {
-    getCurrentDir + "/" + default_conf_file
+    getCurrentDir + "/" + ".conf"
   }
 
   def getCurrentDir: String = {
