@@ -37,14 +37,6 @@
             <scope>provided</scope>
         </dependency>
 
-
-        <!-- https://mvnrepository.com/artifact/org.rogach/scallop_2.10 -->
-        <dependency>
-            <groupId>org.rogach</groupId>
-            <artifactId>scallop_2.10</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
@@ -133,6 +125,13 @@
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
             <version>4.4.5</version>
+        </dependency>
+
+        <!-- https://mvnrepository.com/artifact/org.rogach/scallop_2.11 -->
+        <dependency>
+            <groupId>org.rogach</groupId>
+            <artifactId>scallop_${scala.compat.version}</artifactId>
+            <version>2.0.5</version>
         </dependency>
 
     </dependencies>
