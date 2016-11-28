@@ -1,5 +1,10 @@
 package com.weibo.datasys.conf
 
+import com.weibo.datasys.utils.MyLogging
+import org.apache.commons.lang.StringUtils
+
+import scala.io.Source
+
 /**
   * Created by tuoyu on 11/21/16.
   * Job中的环境设置代码，分为
@@ -14,18 +19,50 @@ object BaseConf {
   val default_disk_value: Long = 1024
 
   val example: BaseConf = DataStrategyConf("", "", "")
+
   def getExampleConf: String = example.getFullConf
+
+  def readConfFile(path: String)(implicit _debug_mode: Boolean = false): BaseConf = {
+    val content = Source
+      .fromFile(path)
+      .getLines()
+      .toList
+      .map(_.trim)
+      .filter(false == _.startsWith("#"))
+      .filter(false == _.startsWith("//"))
+      .filter(false == _.startsWith("/*"))
+      .filter(_.length > 0)
+      .mkString("\n")
+    MyLogging.debug(s"read conf file content = $content")
+
+    try {
+      import org.json4s._
+      import org.json4s.native.JsonMethods._
+      implicit val formats = DefaultFormats
+
+      // TODO now just support DataStrategyConf
+      parse(content).extract[DataStrategyConf]
+
+    } catch {
+      case e: Throwable =>
+        MyLogging.error(e.getMessage)
+        sys.exit(-1)
+    }
+  }
 }
 
 trait BaseConf {
   // required
   def name: String
+
   def command: String
+
   def owner: String
 
   // available
   /* 当前作业的周期性配置，如果不配置，且没有依赖的时候，认为是单次作业 */
   def cron: Option[String]
+
   /* 当前作业的依赖关系，如果配置，则cron内容不起作用 */
   def dependencies: Set[String] = Set()
 
@@ -53,8 +90,13 @@ trait BaseConf {
   def parseCommand: String
 
   def checkValid: (Boolean, Option[String]) = {
-    // TODO
-    ???
+    if (StringUtils.isBlank(name)) {
+      (false, Some("name should not be null or empty"))
+    } else if (StringUtils.isBlank(owner)) {
+      (false, Some("owner should not be null or empty"))
+    } else if (StringUtils.isBlank(command)) {
+      (false, Some("command should not be null or empty"))
+    } else (true, None)
   }
 
   def getFullConf: String = {
@@ -116,10 +158,6 @@ trait BaseConf {
   /* 作业失败之后的重试次数 */
   def retries: Int = BaseConf.default_retries_times
 
-  /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
-  def retryInterval: Int = BaseConf.default_retry_interval
-  def epsilon: String = s"PT${retryInterval}S"
-
   def cpus: Double = BaseConf.default_cpu_value
 
   /* 作业分配内存默认值，单位 MB */
@@ -127,5 +165,10 @@ trait BaseConf {
 
   /* 作业分配磁盘默认值，单位 MB */
   def disk: Long = BaseConf.default_disk_value
+
+  def epsilon: String = s"PT${retryInterval}S"
+
+  /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
+  def retryInterval: Int = BaseConf.default_retry_interval
 }
 
