@@ -1,5 +1,7 @@
 package com.weibo.datasys.conf
 
+import com.weibo.datasys.utils.CronConvert
+import org.apache.commons.lang.StringUtils
 import org.joda.time.DateTime
 
 /**
@@ -25,9 +27,36 @@ case class DataStrategyConf (
                               override val uris: Set[String] = Set(),
                               override val description: Option[String] = None
                             ) extends BaseConf {
-  override def parseCommand: String = "echo 'hi'"
-  override def parseCron: String = s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s"
-  override def jobDescription: String = "TODO parseDescription"
+  override def parseCommand: String = {
+    command
+  }
+
+  override def parseCron: List[String] = {
+    cron match {
+      case Some(c) if (StringUtils.isNotBlank(c)) =>
+        val periodTimes: List[String] = CronConvert
+          .convert(c)
+          .map(_.toScheduleString)
+        if (periodTimes.isEmpty)
+          List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s")
+        else
+          periodTimes
+      case _ => List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s")
+    }
+  }
+
+  override def jobDescription: String = {
+    description match {
+      case Some(desc) if (StringUtils.isNotBlank(desc)) => desc
+      case _ =>
+        s"""User <$owner> submit Job <$name> with Command <<$command>> with account <${this.user.getOrElse(this.owner)}> at ${DateTime.now}""".stripMargin
+    }
+  }
+
   override def getConstrains: Set[String] = Set()
-  override def checkValid: (Boolean, Option[String]) = super.checkValid
+
+  override def checkValid: (Boolean, Option[String]) = {
+    // TODO 加上自己有类似git的限制条件
+    super.checkValid
+  }
 }

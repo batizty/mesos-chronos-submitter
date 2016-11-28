@@ -4,6 +4,7 @@ package com.weibo.datasys.submitter
 import java.io.{File, PrintWriter}
 
 import com.weibo.datasys.conf.BaseConf
+import com.weibo.datasys.jobs.Job
 import com.weibo.datasys.utils.MyLogging
 
 
@@ -60,47 +61,11 @@ object Main {
       sys.exit(-1)
     }
 
-    sys.exit(0)
+    Job(confOption.get) foreach { job =>
+      Submitter.post(job)
+    }
 
-    //
-    //    val path = new File(getConfPath)
-    //    if (false == path.exists()) {
-    //      MyLogging.info(s"Generate Conf file for this job dir = ${path.toString}")
-    //      createConf()
-    //      MyLogging.info(s"Please check .conf file and modify it firstly")
-    //      MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
-    //      sys.exit(-1)
-    //    }
-    //
-    //    MyLogging.info(s"Now .conf content is ${BaseConf.getExampleConf}")
-    //    sys.exit(0)
-    //
-    //    val t = DataStrategyConf(
-    //      "xxx_003",
-    //      "echo 'hi'",
-    //      "tuoyu",
-    //      user = Some("root")
-    //    )
-    //
-    //    println(s" json = ${Job(t).toString}")
-    //    val t2: String =
-    //      """{
-    //          "name": "50",
-    //          "command": "echo 'hi'",
-    //          "shell": true,
-    //          "epsilon": "PT1M",
-    //          "executor": "",
-    //          "executorFlags": "",
-    //          "retries": 2,
-    //          "owner": "tuoyu@staff.weibo.com",
-    //          "async": false,
-    //          "cpus": 1.0,
-    //          "schedule": "R/2014-03-08T20:00:00.000Z/PT5M",
-    //          "constraints": []
-    //        }
-    //      """
-    //
-    //    Submitter.post(Job(t))
+    sys.exit(0)
   }
 
   def createConf(): Boolean = {

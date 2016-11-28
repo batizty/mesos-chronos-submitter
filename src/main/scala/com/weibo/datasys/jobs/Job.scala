@@ -45,22 +45,27 @@ case class Job(
 
 
 object Job {
-  def apply(conf: BaseConf): Job = Job(
-    name = conf.name,
-    command = conf.parseCommand,
-    epsilon = conf.epsilon,
-    retries = conf.retries,
-    owner = conf.owner,
-    ownerName = conf.owner,
-    description = conf.jobDescription,
-    cpus = conf.cpus,
-    disk = conf.disk,
-    mem = conf.mem,
-    runAsUser = conf.user.getOrElse(conf.owner),
-    schedule = conf.parseCron,
-    uris = conf.uris,
-    constrains = conf.getConstrains
-  )
+  def apply(conf: BaseConf): List[Job] =
+    conf
+      .parseCron
+      .map { cron =>
+        Job(
+          name = conf.name,
+          command = conf.parseCommand,
+          epsilon = conf.epsilon,
+          retries = conf.retries,
+          owner = conf.owner,
+          ownerName = conf.owner,
+          description = conf.jobDescription,
+          cpus = conf.cpus,
+          disk = conf.disk,
+          mem = conf.mem,
+          runAsUser = conf.user.getOrElse(conf.owner),
+          schedule = cron,
+          uris = conf.uris,
+          constrains = conf.getConstrains
+        )
+      }
 }
 
 

@@ -24,7 +24,7 @@ object Submitter {
       getScheduledPostUrl
 
     println(s" url = $url")
-    println(s" json = ${Job.toString}")
+    println(s" json = ${job.toString}")
 
     val post = new HttpPost(url)
     post.setHeader("Content-Type", "application/json")

@@ -85,7 +85,7 @@ trait BaseConf {
   def jobDescription: String
 
   // 必须要实现的函数，方便对不同的作业进行解析
-  def parseCron: String
+  def parseCron: List[String]
 
   def parseCommand: String
 
@@ -166,9 +166,9 @@ trait BaseConf {
   /* 作业分配磁盘默认值，单位 MB */
   def disk: Long = BaseConf.default_disk_value
 
-  def epsilon: String = s"PT${retryInterval}S"
-
   /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
   def retryInterval: Int = BaseConf.default_retry_interval
+
+  def epsilon: String = s"PT${retryInterval}S"
 }
 
