@@ -28,8 +28,8 @@ object Submitter {
     else
       getScheduledPostUrl
 
-    MyLogging.debug(s"post url = $url")
-    MyLogging.debug(s"post json = ${job.toJson}")
+    MyLogging.info(s"post url = $url")
+    MyLogging.info(s"post json = ${job.toJson}")
 
     // TODO 这里需要改成post，future，并且可以重试
 

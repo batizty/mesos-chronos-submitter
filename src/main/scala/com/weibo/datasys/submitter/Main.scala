@@ -32,17 +32,19 @@ object Main {
     MyLogging.debug(s"parse cmd name = ${cmd.name}")
     MyLogging.debug(s"parse cmd command = ${cmd.command}")
 
-    var confOption: Option[BaseConf] = null
+    var confOption: Option[BaseConf] = None
 
     if (cmd.conf_file.isDefined) {
       MyLogging.info(s"Read Job Conf from ${cmd.conf_file().getPath}")
       confOption = Some(BaseConf.readConfFile(cmd.conf_file().getPath))
-    } else if (cmd.conf_file.isEmpty) {
-
-    } else {
+    } else if (cmd.command.isEmpty
+      || cmd.name.isEmpty
+      || cmd.owner.isEmpty) {
       MyLogging.error(s"Could not find right argument for mesos-chronos-submitter")
       cmd.printHelp()
       sys.exit(-1)
+    } else {
+      confOption = Some(BaseConf(cmd.name(), cmd.owner(), cmd.command()))
     }
 
     if (confOption.isEmpty) {

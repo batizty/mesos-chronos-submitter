@@ -28,6 +28,8 @@ object CronConvert {
   val SECONDS_OF_DAY: Long = SECONDS_OF_HOUR * HOUR_OF_DAY
   val SECONDS_OF_WEEK: Long = SECONDS_OF_DAY * DAY_OF_WEEK
 
+  val conf = ConfigFactory.load()
+
   /** test main **/
   def main(args: Array[String]): Unit = {
     val lines = Source
@@ -53,7 +55,7 @@ object CronConvert {
 
     var result: List[ISOPeriodTime] = List.empty
     val arr = cron.split("\\s+")
-    if (arr.size >= ConfigFactory.load().getInt("crontab.item-number")) {
+    if (arr.size >= conf.getInt("chronos.crontab.item-number")) {
       val List(min, hour, day, dayOfMonth, weekday) = arr.toList.take(5)
 
       val cron_map: Map[String, String] = Map(CRON_KEY_MIN -> min,

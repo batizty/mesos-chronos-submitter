@@ -27,9 +27,6 @@ case class DataSysConf (
 
   override def checkValid: (Boolean, Option[String]) = super.checkValid
 
-  // TODO
-  override def getConstrains: Set[String] = Set()
-
   override def jobDescription: String = ""
 
 }

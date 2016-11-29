@@ -19,6 +19,9 @@ object BaseConf {
   val default_mem_value: Long = 1024
   val default_disk_value: Long = 1024
 
+  val default_one_time_job_prepare_time: Int = 5
+  val default_one_time_job_timeout: Long = 1000000
+
   val example: BaseConf = DataStrategyConf("", "", "")
 
   def getExampleConf: String = example.getFullConf
@@ -34,7 +37,7 @@ object BaseConf {
       .filter(false == _.startsWith("/*"))
       .filter(_.length > 0)
       .mkString("\n")
-    MyLogging.debug(s"read conf file content = $content")
+    MyLogging.info(s"read conf file content = $content")
 
     try {
       import org.json4s._
@@ -49,6 +52,13 @@ object BaseConf {
         MyLogging.error(e.getMessage)
         sys.exit(-1)
     }
+  }
+
+  def apply(name: String, owner: String, command: String): BaseConf = {
+    DataStrategyConf(
+      name = name,
+      owner = owner,
+      command = command)
   }
 }
 
@@ -70,10 +80,15 @@ trait BaseConf {
   /* 作业执行的用户 */
   def user: Option[String] = None
 
+  def getConstrains: Set[Array[String]] = {
+    host map { h =>
+      Set(Array("hostname", "EQUALS", s"$h"),
+        Array("ip", "EQUALS", s"$h"))
+    } getOrElse Set()
+  }
+
   /* 作业执行的目标机器 */
   def host: Option[String] = None
-
-  def getConstrains: Set[String]
 
   /* 运行的时刻的参数配置 */
 
@@ -102,7 +117,12 @@ trait BaseConf {
     MyLogging.debug(s"period times = $periodTimes")
 
     if (periodTimes.isEmpty)
-      List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000S")
+      List(s"R1/${
+        DateTime
+          .now
+          .plusMinutes(BaseConf.default_one_time_job_prepare_time)
+          .toDateTimeISO
+      }/PT${BaseConf.default_one_time_job_timeout.toString}S")
     else
       periodTimes
   }
@@ -186,9 +206,9 @@ trait BaseConf {
   /* 作业分配磁盘默认值，单位 MB */
   def disk: Long = BaseConf.default_disk_value
 
-  def epsilon: String = s"PT${retryInterval}S"
-
   /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
   def retryInterval: Int = BaseConf.default_retry_interval
+
+  def epsilon: String = s"PT${retryInterval}S"
 }
 

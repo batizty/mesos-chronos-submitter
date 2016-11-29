@@ -32,7 +32,7 @@ case class DataStrategyConf (
     val conf = ConfigFactory.load()
     val periodTimes = CronConvert.convert(command)
     if (periodTimes.nonEmpty) {
-      val (_, tail) = command.split("\\s+").splitAt(conf.getInt("crontab.item-number"))
+      val (_, tail) = command.split("\\s+").splitAt(conf.getInt("chronos.crontab.item-number"))
       tail.mkString(" ")
     } else command
 
@@ -45,8 +45,6 @@ case class DataStrategyConf (
         s"""User <$owner> submit Job <$name> with Command <<$command>> with account <${this.user.getOrElse(this.owner)}> at ${DateTime.now}""".stripMargin
     }
   }
-
-  override def getConstrains: Set[String] = Set()
 
   override def checkValid: (Boolean, Option[String]) = {
     // TODO 加上自己有类似git的限制条件

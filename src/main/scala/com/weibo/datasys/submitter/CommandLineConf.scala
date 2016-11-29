@@ -53,8 +53,22 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     noshort = true
   )
 
+
+  override def verify() = {
+    super.verify()
+    if (conf_file.isEmpty
+      && (name.isEmpty || owner.isEmpty || command.isEmpty)) {
+      showError("Could not enough arguments from command line")
+    }
+  }
+
   override def onError(e: Throwable): Unit = {
-    MyLogging.error(s"\nParse Command Line error: ${e.getMessage}")
+    showError(e.getMessage)
+  }
+
+  def showError(e: String): Unit = {
+    MyLogging.error(s"Parse Command Line Failed")
+    MyLogging.error(s"$e")
     this.printHelp()
     sys.exit(-1)
   }

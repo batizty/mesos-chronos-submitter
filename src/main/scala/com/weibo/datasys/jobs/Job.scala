@@ -26,10 +26,9 @@ case class Job(
                 arguments: Set[String] = Set(),
                 uris: Set[String] = Set(),
                 environment: Set[String] = Set(),
-                constrains: Set[String] = Set(),
+                constrains: Set[Array[String]] = Set(),
                 parents: Set[String] = Set()
               ) {
-
   import org.json4s._
   import org.json4s.native.JsonMethods.parse
 
