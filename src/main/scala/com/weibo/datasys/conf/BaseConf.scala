@@ -109,7 +109,7 @@ trait BaseConf {
           "cron" : "",
 
           // 如果提交的为周期性作业，并且依赖于某个之前提交的作业，之前填写的调度时间将失去效果
-          "dependencies" : "",
+          "dependencies" : [],
 
           ${getAvailableExample}
     }"""
@@ -145,9 +145,9 @@ trait BaseConf {
           // "user"   : "owner",
 
           // 作业执行机器限制条件，默认为空
-          // "host"        : ""
+          // "host"        : []
           // 作业申请URI资源，在作业执行之前会自动下载至作业工作目录, 默认为空
-          // "uris"        : "",
+          // "uris"        : [],
 
           // 作业描述，默认为 "提交时间 owner : owner Submit Job"
           // "description" : ""
@@ -166,9 +166,9 @@ trait BaseConf {
   /* 作业分配磁盘默认值，单位 MB */
   def disk: Long = BaseConf.default_disk_value
 
+  def epsilon: String = s"PT${retryInterval}S"
+
   /* 作业失败之后，重试的间隔时间，单位为s（秒）*/
   def retryInterval: Int = BaseConf.default_retry_interval
-
-  def epsilon: String = s"PT${retryInterval}S"
 }
 
