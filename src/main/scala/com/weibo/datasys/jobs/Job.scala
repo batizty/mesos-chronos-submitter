@@ -29,7 +29,10 @@ case class Job(
                 constrains: Set[String] = Set(),
                 parents: Set[String] = Set()
               ) {
+
   import org.json4s._
+  import org.json4s.native.JsonMethods.parse
+
   implicit val format = Serialization.formats(NoTypeHints)
 
   override def toString = {
@@ -37,7 +40,12 @@ case class Job(
   }
 
   def toJson: String = {
-    Serialization.write(this)
+    val json = parse(Serialization.write(this))
+    if (withDependencies) {
+      Serialization.writePretty(json.removeField(x => x._1 == "schedule"))
+    } else {
+      Serialization.writePretty(json.removeField(x => x._1 == "parents"))
+    }
   }
 
   def withDependencies: Boolean = parents.nonEmpty

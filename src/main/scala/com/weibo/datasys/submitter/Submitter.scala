@@ -24,13 +24,13 @@ object Submitter {
       getScheduledPostUrl
 
     println(s" url = $url")
-    println(s" json = ${job.toString}")
+    println(s" json = ${job.toJson}")
 
     val post = new HttpPost(url)
     post.setHeader("Content-Type", "application/json")
-    post.setEntity(new StringEntity(job.toString))
+    post.setEntity(new StringEntity(job.toJson))
 
-    // TODO 这里修改下返回的结果
+    //    // TODO 这里修改下返回的结果
     val response = (new DefaultHttpClient).execute(post)
     println("--- HEADERS ---")
     response.getAllHeaders.foreach(arg => println(arg))

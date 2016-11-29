@@ -38,10 +38,10 @@ case class DataStrategyConf (
           .convert(c)
           .map(_.toScheduleString)
         if (periodTimes.isEmpty)
-          List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s")
+          List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000S")
         else
           periodTimes
-      case _ => List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000s")
+      case _ => List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000S")
     }
   }
 

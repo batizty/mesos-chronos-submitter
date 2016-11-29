@@ -45,6 +45,7 @@ object CronConvert {
 
   /**
     * 完成cron作业的时间设置的自动转换，如果无法转换，就给个错误
+    *
     * @param cron
     * @return List[(DateTime, Long)]
     */
@@ -53,7 +54,7 @@ object CronConvert {
 
     var result: List[ISOPeriodTime] = List.empty
     val arr = cron.split("\\s+")
-    if (arr.size > 6) {
+    if (arr.size >= 5) {
       val List(min, hour, day, dayOfMonth, weekday) = arr.toList.take(5)
 
       val cron_map: Map[String, String] = Map(CRON_KEY_MIN -> min,
@@ -154,10 +155,6 @@ object CronConvert {
     result
   }
 
-  def showResult(d: DateTime, i: Long): Unit = {
-    MyLogging.debug(s"  >>> start dt = $d interval = $i <<<")
-  }
-
   def getLastWeekDay(wd: Int, h: Int, min: Int): DateTime = {
     DateTime.now
       .withDayOfWeek(wd)
@@ -194,6 +191,10 @@ object CronConvert {
         }
       } flatten
     }.getOrElse(List.empty)
+  }
+
+  def showResult(d: DateTime, i: Long): Unit = {
+    MyLogging.debug(s"  >>> start dt = $d interval = $i <<<")
   }
 }
 
