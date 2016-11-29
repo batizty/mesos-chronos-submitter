@@ -1,7 +1,8 @@
 package com.weibo.datasys.conf
 
-import com.weibo.datasys.utils.MyLogging
+import com.weibo.datasys.utils.{CronConvert, MyLogging}
 import org.apache.commons.lang.StringUtils
+import org.joda.time.DateTime
 
 import scala.io.Source
 
@@ -85,7 +86,26 @@ trait BaseConf {
   def jobDescription: String
 
   // 必须要实现的函数，方便对不同的作业进行解析
-  def parseCron(implicit _debug_mode: Boolean): List[String]
+  def parseCron(implicit _debug_mode: Boolean): List[String] = {
+    val cmd = {
+      val c = cron.getOrElse("")
+      if (StringUtils.isBlank(c))
+        command
+      else
+        c
+    }
+
+    val periodTimes: List[String] = CronConvert
+      .convert(cmd)
+      .map(_.toScheduleString)
+
+    MyLogging.debug(s"period times = $periodTimes")
+
+    if (periodTimes.isEmpty)
+      List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000S")
+    else
+      periodTimes
+  }
 
   def parseCommand: String
 

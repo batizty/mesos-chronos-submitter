@@ -1,6 +1,7 @@
 package com.weibo.datasys.conf
 
-import com.weibo.datasys.utils.{CronConvert, MyLogging}
+import com.typesafe.config.ConfigFactory
+import com.weibo.datasys.utils.CronConvert
 import org.apache.commons.lang.StringUtils
 import org.joda.time.DateTime
 
@@ -28,21 +29,13 @@ case class DataStrategyConf (
                               override val description: Option[String] = None
                             ) extends BaseConf {
   override def parseCommand: String = {
-    command
-  }
+    val conf = ConfigFactory.load()
+    val periodTimes = CronConvert.convert(command)
+    if (periodTimes.nonEmpty) {
+      val (_, tail) = command.split("\\s+").splitAt(conf.getInt("crontab.item-number"))
+      tail.mkString(" ")
+    } else command
 
-  override def parseCron(implicit _debug_mode: Boolean): List[String] = {
-    val cmd = cron.getOrElse(command)
-    val periodTimes: List[String] = CronConvert
-      .convert(cmd)
-      .map(_.toScheduleString)
-
-    MyLogging.debug(s"period times = $periodTimes")
-
-    if (periodTimes.isEmpty)
-      List(s"R1/${DateTime.now.plusMinutes(5).toDateTimeISO}/PT10000S")
-    else
-      periodTimes
   }
 
   override def jobDescription: String = {

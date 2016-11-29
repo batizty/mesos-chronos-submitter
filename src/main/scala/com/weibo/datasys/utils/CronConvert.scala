@@ -1,6 +1,7 @@
 package com.weibo.datasys.utils
 
 
+import com.typesafe.config.ConfigFactory
 import org.joda.time.DateTime
 
 import scala.io.Source
@@ -10,8 +11,6 @@ import scala.util.{Success, Try}
   * Created by tuoyu on 11/23/16.
   */
 object CronConvert {
-  implicit val _debug_mode: Boolean = true
-
   val SYMBOL_STAR = "*"
   val SYMBOL_EVERY = "/"
 
@@ -49,12 +48,12 @@ object CronConvert {
     * @param cron
     * @return List[(DateTime, Long)]
     */
-  def convert(cron: String): List[ISOPeriodTime] = {
+  def convert(cron: String)(implicit _debug_mode: Boolean = false): List[ISOPeriodTime] = {
     MyLogging.debug(s"raw cron string = $cron")
 
     var result: List[ISOPeriodTime] = List.empty
     val arr = cron.split("\\s+")
-    if (arr.size >= 5) {
+    if (arr.size >= ConfigFactory.load().getInt("crontab.item-number")) {
       val List(min, hour, day, dayOfMonth, weekday) = arr.toList.take(5)
 
       val cron_map: Map[String, String] = Map(CRON_KEY_MIN -> min,
