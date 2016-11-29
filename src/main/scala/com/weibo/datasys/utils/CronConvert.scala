@@ -64,7 +64,7 @@ object CronConvert {
         CRON_KEY_WEEKDAY -> weekday)
         .filter { case (k, v) => v != SYMBOL_STAR }
 
-      MyLogging.debug(s" cron_map = $cron_map ")
+      MyLogging.debug(s"cron_map = $cron_map ")
 
       val wk_list: List[Int] = getListValues(cron_map.get(CRON_KEY_WEEKDAY))
 

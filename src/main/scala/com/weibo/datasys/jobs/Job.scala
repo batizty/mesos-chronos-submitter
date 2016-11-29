@@ -53,7 +53,7 @@ case class Job(
 
 
 object Job {
-  def apply(conf: BaseConf): List[Job] =
+  def apply(conf: BaseConf): List[Job] = {
     conf
       .parseCron
       .map { cron =>
@@ -71,9 +71,11 @@ object Job {
           runAsUser = conf.user.getOrElse(conf.owner),
           schedule = cron,
           uris = conf.uris,
-          constrains = conf.getConstrains
+          constrains = conf.getConstrains,
+          parents = conf.dependencies
         )
       }
+  }
 }
 
 
