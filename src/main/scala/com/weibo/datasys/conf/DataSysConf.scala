@@ -25,7 +25,7 @@ case class DataSysConf (
                        ) extends BaseConf {
   def parseCommand: String = "TODO parseCommand"
 
-  override def parseCron: List[String] = List("TODO parseCron")
+  override def parseCron(implicit _debug_mode: Boolean): List[String] = List("TODO parseCron")
 
   override def checkValid: (Boolean, Option[String]) = super.checkValid
 

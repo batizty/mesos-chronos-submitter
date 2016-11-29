@@ -85,7 +85,7 @@ trait BaseConf {
   def jobDescription: String
 
   // 必须要实现的函数，方便对不同的作业进行解析
-  def parseCron: List[String]
+  def parseCron(implicit _debug_mode: Boolean): List[String]
 
   def parseCommand: String
 
