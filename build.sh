@@ -47,18 +47,28 @@ CONF_FILE_CONTENT=`cat $BASE_DIR/src/resources/application.conf`
 
 echo '#!/bin/sh' >> $SHELL_FILE_NAME
 echo '' >> $SHELL_FILE_NAME
+
+echo '#### CONF FILE ####' >> $SHELL_FILE_NAME
 echo "conf_file_content='$CONF_FILE_CONTENT'" >> $SHELL_FILE_NAME
 echo 'conf_tmp_file=$(mktemp)' >> $SHELL_FILE_NAME
 echo 'echo "$conf_file_content" > $conf_tmp_file' >> $SHELL_FILE_NAME
 echo 'self="$(cd "$(dirname "$0")" && pwd -P)"/"$(basename "$0")"' >> $SHELL_FILE_NAME
+
+echo '' >> $SHELL_FILE_NAME
+echo '#### RUNNING MAIN JAR ####' >> $SHELL_FILE_NAME
 echo "java  \
 -Dconfig.file=\${conf_tmp_file} \
 -cp \$self \
 com.weibo.datasys.submitter.Main \$@" >> $SHELL_FILE_NAME
 echo 'ret=$?' >> $SHELL_FILE_NAME
-echo 'rm ${conf_tmp_file}' >> $SHELL_FILE_NAME
-echo 'exit $?' >> $SHELL_FILE_NAME
 
+echo '' >> $SHELL_FILE_NAME
+echo '#### CLEAN ####' >> $SHELL_FILE_NAME
+echo 'rm ${conf_tmp_file}' >> $SHELL_FILE_NAME
+echo 'exit $ret' >> $SHELL_FILE_NAME
+
+echo '' >> $SHELL_FILE_NAME
+echo '#### mesos-chronos-submitter jar ####'
 cat $JAR_FILE >> $SHELL_FILE_NAME
 
 chmod u=rwx,g=rx $SHELL_FILE_NAME
