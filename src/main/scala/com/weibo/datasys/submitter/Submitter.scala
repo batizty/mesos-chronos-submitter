@@ -28,6 +28,11 @@ object Submitter {
     else
       getScheduledPostUrl
 
+    if (job.withDependencies) {
+      // TODO check dependencies exists
+
+    }
+
     MyLogging.info(s"post url = $url")
     MyLogging.info(s"post json = ${job.toJson}")
 

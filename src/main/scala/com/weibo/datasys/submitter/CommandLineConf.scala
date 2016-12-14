@@ -56,7 +56,8 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
   val example = opt[Boolean](
     descr = "generate example conf file",
     default = Some(false),
-    required = false
+    required = false,
+    noshort = true
   )
 
   // TODO 加上host参数

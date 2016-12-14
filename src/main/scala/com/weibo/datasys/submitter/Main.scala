@@ -12,6 +12,8 @@ import com.weibo.datasys.utils.MyLogging
   * Created by tuoyu on 11/21/16.
   */
 object Main {
+  val defaultConfExampleName = ".conf"
+
   def main(args: Array[String]): Unit = {
     lazy val cmd = new CommandLineConf(args)
 
@@ -34,7 +36,11 @@ object Main {
 
     var confOption: Option[BaseConf] = None
 
-    if (cmd.conf_file.isDefined) {
+    if (cmd.example() == true) {
+      MyLogging.info(s"Generate Job Conf Example File")
+      createConf()
+      sys.exit(0)
+    } else if (cmd.conf_file.isDefined) {
       MyLogging.info(s"Read Job Conf from ${cmd.conf_file().getPath}")
       confOption = Some(BaseConf.readConfFile(cmd.conf_file().getPath))
     } else if (cmd.command.isEmpty
@@ -76,7 +82,7 @@ object Main {
       val writer = new PrintWriter(new File(getConfPath))
       writer.write(conf_content)
       writer.close()
-      MyLogging.info(s"Write .conf into your work dir $getConfPath")
+      MyLogging.info(s"Write $defaultConfExampleName into your work dir $getConfPath")
       true
     } catch {
       case e: Throwable =>
@@ -86,7 +92,7 @@ object Main {
   }
 
   def getConfPath: String = {
-    getCurrentDir + "/" + ".conf"
+    getCurrentDir + "/" + defaultConfExampleName
   }
 
   def getCurrentDir: String = {
