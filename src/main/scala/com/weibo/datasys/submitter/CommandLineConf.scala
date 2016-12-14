@@ -60,9 +60,18 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     noshort = true
   )
 
-  // TODO 加上host参数
-  // TODO 加上dependencies参数
+  val target_host = opt[String](
+    descr = "target host which this command will be run, it should be target host's hostname",
+    required = false,
+    noshort = true
+  )
 
+  val dependencies = opt[List[String]](
+    descr = "dependencies jobs of this job, before this job work, the dependencies should be finished correctly",
+    default = Some(List.empty),
+    required = false,
+    noshort = true
+  )
 
   override def verify() = {
     super.verify()
@@ -82,6 +91,16 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     MyLogging.error(s"$e")
     this.printHelp()
     sys.exit(-1)
+  }
+
+  def showDebug()(implicit _debug_mode: Boolean = false) = {
+    MyLogging.debug(s"parse cmd conf_file = ${conf_file}")
+    MyLogging.debug(s"parse cmd owner = ${owner}")
+    MyLogging.debug(s"parse cmd name = ${name}")
+    MyLogging.debug(s"parse cmd command = ${command}")
+    MyLogging.debug(s"parse cmd example = ${example}")
+    MyLogging.debug(s"parse cmd target_host = ${target_host}")
+    MyLogging.debug(s"parse cmd dependencies = ${dependencies}")
   }
 
   verify()

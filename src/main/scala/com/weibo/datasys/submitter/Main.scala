@@ -26,13 +26,8 @@ object Main {
 
     if (_debug_mode) {
       MyLogging.debug("debug mode is open")
+      cmd.showDebug()
     }
-
-    MyLogging.debug(s"parse cmd command = ${cmd.command}")
-    MyLogging.debug(s"parse cmd conf_file = ${cmd.conf_file}")
-    MyLogging.debug(s"parse cmd owner = ${cmd.owner}")
-    MyLogging.debug(s"parse cmd name = ${cmd.name}")
-    MyLogging.debug(s"parse cmd command = ${cmd.command}")
 
     var confOption: Option[BaseConf] = None
 
@@ -50,7 +45,13 @@ object Main {
       cmd.printHelp()
       sys.exit(-1)
     } else {
-      confOption = Some(BaseConf(cmd.name(), cmd.owner(), cmd.command()))
+      confOption = Some(BaseConf(
+        cmd.name(),
+        cmd.owner(),
+        cmd.command(),
+        cmd.target_host.toOption,
+        cmd.dependencies()
+      ))
     }
 
     if (confOption.isEmpty) {
