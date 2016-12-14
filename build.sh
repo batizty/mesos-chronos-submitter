@@ -7,6 +7,7 @@ echo "\n\n++++++++++++ CLEAN ++++++\n"
 CMD="mvn clean"
 $CMD
 
+echo ""
 echo "rm $SHELL_FILE_NAME if exists"
 if [ -f "$SHELL_FILE_NAME" ];
 then
@@ -68,9 +69,11 @@ echo 'rm ${conf_tmp_file}' >> $SHELL_FILE_NAME
 echo 'exit $ret' >> $SHELL_FILE_NAME
 
 echo '' >> $SHELL_FILE_NAME
-echo '#### mesos-chronos-submitter jar ####'
+echo '#### mesos-chronos-submitter jar ####' >> $SHELL_FILE_NAME
 cat $JAR_FILE >> $SHELL_FILE_NAME
 
+echo ""
+echo "Setting Priority"
 chmod u=rwx,g=rx $SHELL_FILE_NAME
 
 echo "Build mesos-chronos-submitter OK"
