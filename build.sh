@@ -42,13 +42,23 @@ echo "Generate Bin File for mesos-chronos-submitter"
 
 echo "Target File $SHELL_FILE_NAME"
 
-echo "#!/bin/sh\n" >> $SHELL_FILE_NAME
+############### shell file ###########
+CONF_FILE_CONTENT=`cat $BASE_DIR/src/resources/application.conf`
+
+echo '#!/bin/sh' >> $SHELL_FILE_NAME
+echo '' >> $SHELL_FILE_NAME
+echo "conf_file_content='$CONF_FILE_CONTENT'" >> $SHELL_FILE_NAME
+echo 'conf_tmp_file=$(mktemp)' >> $SHELL_FILE_NAME
+echo 'echo "$conf_file_content" > $conf_tmp_file' >> $SHELL_FILE_NAME
 echo 'self="$(cd "$(dirname "$0")" && pwd -P)"/"$(basename "$0")"' >> $SHELL_FILE_NAME
 echo "java  \
--Dconfig.file=src/resources/application.conf \
+-Dconfig.file=\${conf_tmp_file} \
 -cp \$self \
 com.weibo.datasys.submitter.Main \$@" >> $SHELL_FILE_NAME
-echo "exit $?" >> $SHELL_FILE_NAME
+echo 'ret=$?' >> $SHELL_FILE_NAME
+echo 'rm ${conf_tmp_file}' >> $SHELL_FILE_NAME
+echo 'exit $?' >> $SHELL_FILE_NAME
+
 cat $JAR_FILE >> $SHELL_FILE_NAME
 
 chmod u=rwx,g=rx $SHELL_FILE_NAME
