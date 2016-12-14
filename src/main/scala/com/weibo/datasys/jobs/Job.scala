@@ -1,12 +1,15 @@
 package com.weibo.datasys.jobs
 
 import com.weibo.datasys.conf.BaseConf
+import com.weibo.datasys.utils.MyLogging
+import org.json4s._
+import org.json4s.native.JsonMethods.parse
 import org.json4s.native.Serialization
-
 
 /**
   * Created by tuoyu on 11/21/16.
   */
+
 case class Job(
                 name: String,
                 command: String,
@@ -21,7 +24,7 @@ case class Job(
                 mem: Long,
                 disabled: Boolean = false,
                 runAsUser: String,
-                schedule: String,
+                schedule: String = "",
                 highPriority: Boolean = false,
                 arguments: Set[String] = Set(),
                 uris: Set[String] = Set(),
@@ -29,9 +32,6 @@ case class Job(
                 constrains: Set[Array[String]] = Set(),
                 parents: Set[String] = Set()
               ) {
-  import org.json4s._
-  import org.json4s.native.JsonMethods.parse
-
   implicit val format = Serialization.formats(NoTypeHints)
 
   override def toString = {
@@ -52,6 +52,19 @@ case class Job(
 
 
 object Job {
+  implicit val formats = DefaultFormats
+
+  def parseJobs(str: String): List[Job] = {
+    try {
+      parse(str).extract[List[Job]]
+    } catch {
+      case e: Throwable =>
+        e.printStackTrace()
+        MyLogging.error(e.getMessage)
+        sys.exit(-1)
+    }
+  }
+
   def apply(conf: BaseConf)(implicit _debug_mode: Boolean): List[Job] = {
     val crons: List[String] = conf.parseCron
     var index: Option[Int] = None

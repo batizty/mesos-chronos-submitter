@@ -28,9 +28,9 @@ object Submitter {
     else
       getScheduledPostUrl
 
-    if (job.withDependencies) {
-      // TODO check dependencies exists
-
+    if (job.withDependencies && false == checkDependencies(job.parents)) {
+      MyLogging.error("Check Dependencies failed")
+      sys.exit(-1)
     }
 
     MyLogging.info(s"post url = $url")
@@ -49,6 +49,47 @@ object Submitter {
     MyLogging.info(s"response status = ${response.getStatusLine}")
   }
 
+  def checkDependencies(dps: Set[String]): Boolean = {
+    if (dps.nonEmpty) {
+      try {
+        val jsonStr = get(checkJobsUrl())
+        val jobs: List[Job] = Job.parseJobs(jsonStr)
+        val jobNames: Set[String] = jobs.map(_.name).toSet
+        val minusSet: Set[String] = dps -- jobNames
+        if (minusSet.nonEmpty) {
+          MyLogging.error(s"Dependencies Jobs [${minusSet.mkString(",")}] Not found, " +
+            s"valid Jobs [${jobNames.mkString(",")}]")
+          false
+        } else true
+      } catch {
+        case e: Throwable =>
+          MyLogging.error(s"Could not access URL=${checkJobsUrl()} with Message : ${e.getMessage}")
+          sys.exit(-1)
+      }
+    } else true
+  }
+
+  def checkJobsUrl(): String = {
+    s"""http://$host:$port/scheduler/jobs"""
+  }
+
+  @throws(classOf[java.io.IOException])
+  @throws(classOf[java.net.SocketTimeoutException])
+  def get(url: String,
+          connectTimeout: Int = 5000,
+          readTimeout: Int = 5000,
+          requestMethod: String = "GET") = {
+    import java.net.{HttpURLConnection, URL}
+    val connection = (new URL(url)).openConnection.asInstanceOf[HttpURLConnection]
+    connection.setConnectTimeout(connectTimeout)
+    connection.setReadTimeout(readTimeout)
+    connection.setRequestMethod(requestMethod)
+    val inputStream = connection.getInputStream
+    val content = io.Source.fromInputStream(inputStream).mkString
+    if (inputStream != null) inputStream.close
+    content
+  }
+
   def getScheduledPostUrl: String = {
     s"""http://$host:$port/$prefix_url/$no_dependent_url"""
   }
@@ -56,4 +97,5 @@ object Submitter {
   def getDependentPostUrl(): String = {
     s"""http://$host:$port/$prefix_url/$dependent_url"""
   }
+
 }
