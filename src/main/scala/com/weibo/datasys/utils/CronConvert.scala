@@ -32,6 +32,7 @@ object CronConvert {
 
   /** test main **/
   def main(args: Array[String]): Unit = {
+    val _debug_mode: Boolean = true
     val lines = Source
       .fromFile("cron_job_list.txt")
       .getLines()
@@ -40,7 +41,70 @@ object CronConvert {
       .filter(false == _.startsWith("#"))
 
     for (line <- lines) {
-      convert(line)
+      convert2(line)
+    }
+  }
+
+  def convert2(cron: String)(implicit _debug_mode: Boolean = true): List[ISOPeriodTime] = {
+    MyLogging.debug(s"raw cron string = $cron")
+    var result: List[ISOPeriodTime] = List.empty
+
+    val arr = cron.split("\\s+")
+    if (arr.size >= 5) {
+      //conf.getInt("chronos.crontab.item-number")) {
+      val List(min, hour, dayOfMonth, month, weekday) = arr.toList.take(5)
+
+      val cron_map: Map[IntervalEnum.Value, String] = Map(
+        IntervalEnum.MINUTE -> min,
+        IntervalEnum.HOUR -> hour,
+        IntervalEnum.DAY_OF_MONTH -> dayOfMonth,
+        IntervalEnum.MONTH -> month,
+        IntervalEnum.WEEK_DAY -> weekday
+      ).filterNot { case (k, v) => v == SYMBOL_STAR }
+
+      MyLogging.debug(s"cron_map = $cron_map ")
+
+      var interval: Option[IntervalEnum.Value] = None
+
+      if (cron_map.get(IntervalEnum.WEEK_DAY).isDefined) {
+
+      } else {
+
+      }
+
+    }
+    List()
+  }
+
+  def parseCrontabUnit(raw: String): (List[Int], Option[Int]) = {
+    val p1 = """\d+"""
+    val p2 = """\*/\d+"""
+    val p3 = """\d+-\d+"""
+    val p4 = """\d+(,\d+)*"""
+
+    if (raw.matches(p1)) {
+      (List(raw.toInt), None)
+    } else if (raw.matches(p2)) {
+      val tmps = raw.split("""/""")
+      (List(), Some(tmps(1).toInt))
+    } else if (raw.matches(p3)) {
+      // Not Support In ISO8601
+      val List(s: Int, e: Int) = raw
+        .split("-")
+        .toList
+        .take(2)
+        .map(_.toInt)
+      s.to(e)
+        .toList
+        .map(x => (Some(x), Some(1)))
+      (List(), None)
+    } else if (raw.matches(p4)) {
+      (raw
+        .split(",")
+        .toList
+        .map(x => x.toInt), None)
+    } else {
+      (List(), None)
     }
   }
 
@@ -58,7 +122,8 @@ object CronConvert {
     if (arr.size >= conf.getInt("chronos.crontab.item-number")) {
       val List(min, hour, day, dayOfMonth, weekday) = arr.toList.take(5)
 
-      val cron_map: Map[String, String] = Map(CRON_KEY_MIN -> min,
+      val cron_map: Map[String, String] = Map(
+        CRON_KEY_MIN -> min,
         CRON_KEY_HOUR -> hour,
         CRON_KEY_DAY -> day,
         CRON_KEY_DAY_OF_MONTH -> dayOfMonth,
@@ -216,4 +281,32 @@ case class ISOPeriodTime(
     s"$r/$start/PT${interval}S"
   }
 
+}
+
+case class ISOPeriodTime2(
+                           start: DateTime,
+                           count: Int = -1,
+                           interval: String
+                         ) {
+  override def toString: String = {
+    var str = s"start time = $start interval = $interval"
+    if (count > 0) {
+      str += s" count = $count"
+    }
+    str
+  }
+
+  def toScheduleString: String = {
+    val r = if (count > 0) s"R$count" else "R"
+    s"$r/$start/${interval}"
+  }
+}
+
+object IntervalEnum extends Enumeration {
+  val MINUTE = Value("Minute")
+  val HOUR = Value("Hour")
+  val DAY_OF_MONTH = Value("DayOfMonth")
+  val MONTH = Value("Month")
+  val WEEK_DAY = Value("WeekDay")
+  val YEAR = Value("Year")
 }
