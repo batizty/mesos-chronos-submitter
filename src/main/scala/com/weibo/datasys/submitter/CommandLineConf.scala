@@ -53,11 +53,21 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     noshort = true
   )
 
+  val example = opt[Boolean](
+    descr = "generate example conf file",
+    default = Some(false),
+    required = false
+  )
+
+  // TODO 加上host参数
+  // TODO 加上dependencies参数
+
 
   override def verify() = {
     super.verify()
     if (conf_file.isEmpty
-      && (name.isEmpty || owner.isEmpty || command.isEmpty)) {
+      && (name.isEmpty || owner.isEmpty || command.isEmpty)
+      && (example.isEmpty)) {
       showError("Could not enough arguments from command line")
     }
   }

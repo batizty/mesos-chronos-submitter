@@ -82,7 +82,7 @@ trait BaseConf {
 
   def getConstrains: Set[Array[String]] = {
     host map { h =>
-      Set(Array("hostname", "EQUALS", s"$h")
+      Set(Array("hostname", "EQUALS", s"$h"))
     } getOrElse Set()
   }
 
