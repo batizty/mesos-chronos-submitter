@@ -66,9 +66,8 @@ object Submitter {
   def checkDependencies(dps: Set[String]): Boolean = {
     if (dps.nonEmpty) {
       try {
-        val jsonStr = DispatchClient.get(checkJobsUrl())
-        if (jsonStr.nonEmpty) {
-          val jobs: List[Job] = Job.parseJobs(jsonStr)
+        val jobs = getJobs()
+        if (jobs.nonEmpty) {
           val jobNames: Set[String] = jobs.map(_.name).toSet
           val minusSet: Set[String] = dps -- jobNames
           if (minusSet.nonEmpty) {
@@ -82,6 +81,13 @@ object Submitter {
           sys.exit(-1)
       }
     } else true
+  }
+
+  def getJobs(): List[Job] = {
+    val jsonStr = DispatchClient.get(checkJobsUrl())
+    if (jsonStr.nonEmpty) {
+      Job.parseJobs(jsonStr)
+    } else List.empty
   }
 
   def checkJobsUrl(): String = {

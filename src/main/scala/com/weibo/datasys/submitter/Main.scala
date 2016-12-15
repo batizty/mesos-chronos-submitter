@@ -35,6 +35,13 @@ object Main {
       MyLogging.info(s"Generate Job Conf Example File")
       createConf()
       sys.exit(0)
+    } else if (cmd.list_jobs() == true) {
+      MyLogging.info(s"List all Job Conf")
+      for {job <- Submitter.getJobs()} {
+        println(s"------- Job Name : ${job.name} --------")
+        println(s" ${job.toString}")
+      }
+      sys.exit(0)
     } else if (cmd.conf_file.isDefined) {
       MyLogging.info(s"Read Job Conf from ${cmd.conf_file().getPath}")
       confOption = Some(BaseConf.readConfFile(cmd.conf_file().getPath))

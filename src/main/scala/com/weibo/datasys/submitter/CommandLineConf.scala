@@ -14,8 +14,10 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
   footer("\nIf you met any question, please email to tuoyu@staff.weibo.com")
 
   val help = opt[Boolean](
+    name = "help",
     descr = "print this message",
-    default = Some(false))
+    required = false
+  )
 
   val debug_mode = opt[Boolean](
     name = "debug_mode",
@@ -73,17 +75,25 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     noshort = true
   )
 
+  val list_jobs = opt[Boolean](
+    descr = "list all jobs of this chronos",
+    required = false,
+    noshort = true
+  )
+
   override def verify() = {
     super.verify()
     if (conf_file.isEmpty
       && (name.isEmpty || owner.isEmpty || command.isEmpty)
-      && (example.isEmpty)) {
+      && (example.isEmpty)
+      && (list_jobs.isEmpty)) {
       showError("Could not enough arguments from command line")
     }
   }
 
   override def onError(e: Throwable): Unit = {
     showError(e.getMessage)
+    e.printStackTrace()
   }
 
   def showError(e: String): Unit = {
