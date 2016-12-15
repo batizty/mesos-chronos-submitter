@@ -153,10 +153,8 @@ trait BaseConf {
 
           // 如果提交的为单次作业，请跳到可选填部分修改
 
-          // 如果提交的为周期性作业，并且无依赖，请填写，语法请查看crontab说明
-          "cron" : "",
-
           // 如果提交的为周期性作业，并且依赖于某个之前提交的作业，之前填写的调度时间将失去效果
+          // 周期执行将由所以依赖作业控制
           "dependencies" : [],
 
           ${getAvailableExample}
@@ -166,35 +164,33 @@ trait BaseConf {
   private def getRequiredExample: String = {
     s"""
           // 必须要填写的内容
-          // 你的邮箱前缀
+          // !! 用户名称，如果需要在远程机器上执行，并且更换用户，请关注user项目
           "owner"       : "",
           // 作业名称，可以作为依赖存在，被其他任务所依赖
           "name"        : "",
-          // 作业执行命令，填写你需要执行的命令
+          // 作业执行命令，填写你需要执行的命令, 如果为周期性作业，请参照crontab语法填写，非周期性作业，直接填写命令即可
           "command"     : """""
   }
 
   private def getAvailableExample: String = {
     s"""
           // 可选填写部分
+          //
+          // 远程机器中，如果需要某个特定账号执行任务，请填写账户名称，如果为空，默认与owner内容相同
+          // "user"       : "owner",
+          // 指定远程机器的hostname，如果没有指定，会随机调度到某台远程机器中
+          // "host"       : "",
           // 作业执行失败之后的重试次数，默认为$retries
-          // "retries"  : $retries,
+          // "retries"    : $retries,
           // 作业执行失败之后，重试之间的间隔时间，时间单位为S(秒)，默认为$retryInterval
           // "retryInterval" : $retryInterval
-
           // 作业申请cpu资源，默认为0.1
           // "cpus"        : $cpus,
           // 作业申请磁盘资源，单位为MB，默认为1024
           // "disk"        : $disk,
           // 作业申请内存资源，单位为MB，默认为1024
           // "mem"         : $mem,
-
-          // 执行作业账号，默认和owner相同
-          // "user"   : "owner",
-
-          // 作业执行机器限制条件，默认为空
-          // "host"        : []
-          // 作业申请URI资源，在作业执行之前会自动下载至作业工作目录, 默认为空
+         // 作业申请URI资源，在作业执行之前会自动下载至作业工作目录, 默认为空
           // "uris"        : [],
 
           // 作业描述，默认为 "提交时间 owner : owner Submit Job"
