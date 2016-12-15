@@ -4,6 +4,7 @@ import java.io.File
 
 import com.weibo.datasys.utils.MyLogging
 import org.rogach.scallop.ScallopConf
+import org.rogach.scallop.exceptions.Help
 
 /**
   * Created by tuoyu on 11/25/16.
@@ -15,7 +16,9 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
 
   val help = opt[Boolean](
     name = "help",
+    default = Some(false),
     descr = "print this message",
+    short = 'h',
     required = false
   )
 
@@ -92,8 +95,10 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
   }
 
   override def onError(e: Throwable): Unit = {
-    showError(e.getMessage)
-    e.printStackTrace()
+    e match {
+      case Help(x) => this.printHelp(); sys.exit(0)
+      case m => showError(m.getMessage)
+    }
   }
 
   def showError(e: String): Unit = {
