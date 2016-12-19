@@ -37,19 +37,21 @@ mesos-chronos-submitter & chronos
     	* Chronos的重试不支持设定重试之间的时间间隔
     		Chronos使用一个很别扭的概念 "Epsilon"定义了一个时间段，保证如果当前作业在正确的时间窗口内如果没有调度作业，那么保证在Epsilon时间内能够调度作业
         	```bash
-        	epsilon : If Chronos misses the scheduled run time for any reason, it will still run the job if the time is within this interval. Epsilon must be formatted like an ISO 8601 Duration.```
-
+        	epsilon : If Chronos misses the scheduled run time for any reason, it will still run the job if the time is within this interval. Epsilon must be formatted like an ISO 8601 Duration.
+            ```
 		* epsilon不满足我们的需求，需要改成重试的间隔时间
 
     * 作业依赖
     	* Chronos的作业依赖只有单线条的依赖
     	Chronos的依赖只完成了简单线性检查，当某作业A，B，C有关系
+        ```
         		A   		 B
                 |			|
                 |			|
                 -------------
 					  |
                       C
+        ```
 		的时候，在 A 或者 B 执行完毕的时候，都会将 C 加入到可执行队列中去，实际上缺少对 A && B 这样的条件的检查
 
         * 这个简单的线性依赖关系，不能满足我们的要求，需要改成多依赖条件
