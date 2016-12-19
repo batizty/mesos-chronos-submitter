@@ -50,6 +50,7 @@ mesos-chronos-submitter & chronos
 					  |
                       C
 		的时候，在 A 或者 B 执行完毕的时候，都会将 C 加入到可执行队列中去，实际上缺少对 A && B 这样的条件的检查
+
         * 这个简单的线性依赖关系，不能满足我们的要求，需要改成多依赖条件
 
 	* 周期性作业
@@ -125,9 +126,86 @@ sh build.sh
 
 ##### 使用
 直接使用shell脚本文件 mesos-chronos-submitter
+```bash
+# tuoyu @ bj-m-204651a in ~/MyWork/mesos-chronos-submitter on git:master x [23:20:01] C:255
+$ ./mesos-chronos-submitter -h
+mesos-chronos-submitter version 0.0.1
+Usage: mesos-chronos-submitter
+      --command  <arg>           This Job Command Line, if didn't prepare the
+                                 conf file ready, this is required
+      --conf_file  <arg>         Job Config file
+      --dependencies  <arg>...   dependencies jobs of this job, before this job
+                                 work, the dependencies should be finished
+                                 correctly
+      --example                  generate example conf file
+      --list_jobs                list all jobs of this chronos
+      --name  <arg>              This Job Name, if you didn't prepare the conf
+                                 file ready, this is required
+      --owner  <arg>             This Job Owner, if you didn't prepare the conf
+                                 file, this is required
+      --target_host  <arg>       target host which this command will be run, it
+                                 should be target host's hostname
+  -h, --help                     print this message
+      --version                  Show version of this program
 
+If you met any question, please email to tuoyu@staff.weibo.com
+```
+重要参数
+* conf_file
+可以通过指定conf文件来传递设定job内容，此种方式比较全面，并且完整
+* command
+希望在 Mesos Slave 中执行的命令，可以直接填写 crontab 命令
+* owner
+设定当前作业的所有者名称，**非常重要**，默认会使用ower作为远程机器执行命令的user，如果需要单独设定，请填写到conf文件中
+* name
+作业名称，**非常重要**，job 的唯一标志，也会作为依赖的标志
+* example
+自动生成一个conf文件
+* list_jobs
+将当前Chronos作业以Json格式打印出来
+* target_host
+指定目标机器的 **hostname**，实现指定机器上执行命令，目前最有效的是 **hostname**, Mesos中支持 ip 指定，但是ip会有歧义（Mesos中支持一个Advertise_Ip会有混淆）
 
 ##### Job Conf 文件解析
+```json
+{
+          // 必须要填写的内容
+          // !! 用户名称，如果需要在远程机器上执行，并且更换用户，请关注user项目
+          "owner"       : "",
+          // 作业名称，可以作为依赖存在，被其他任务所依赖
+          "name"        : "",
+          // 作业执行命令，填写你需要执行的命令, 如果为周期性作业，请参照crontab语法填写，非周期性作业，直接填写命令即可
+          "command"     : "",
+
+          // 如果提交的为单次作业，请跳到可选填部分修改
+
+          // 如果提交的为周期性作业，并且依赖于某个之前提交的作业，之前填写的调度时间将失去效果
+          // 周期执行将由所以依赖作业控制
+          "dependencies" : [],
+
+          // 可选填写部分
+          //
+          // 远程机器中，如果需要某个特定账号执行任务，请填写账户名称，如果为空，默认与owner内容相同
+          // "user"       : "owner",
+          // 指定远程机器的hostname，如果没有指定，会随机调度到某台远程机器中
+          // "host"       : "",
+          // 作业执行失败之后的重试次数，默认为2
+          // "retries"    : 2,
+          // 作业执行失败之后，重试之间的间隔时间，时间单位为S(秒)，默认为60
+          // "retryInterval" : 60
+          // 作业申请cpu资源，默认为0.1
+          // "cpus"        : 0.1,
+          // 作业申请磁盘资源，单位为MB，默认为1024
+          // "disk"        : 1024,
+          // 作业申请内存资源，单位为MB，默认为1024
+          // "mem"         : 1024,
+         // 作业申请URI资源，在作业执行之前会自动下载至作业工作目录, 默认为空
+          // "uris"        : [],
+
+          // 作业描述，默认为 "提交时间 owner : owner Submit Job"
+          // "description" : ""
+    }
+```
 
 ##### 配置文件
 
