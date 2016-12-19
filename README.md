@@ -61,7 +61,9 @@ mesos-chronos-submitter & chronos
 			ISO 8601的时间描述方式简单如下
             ```bash
             R10/2012-10-01T05:52:00Z/PT2S
+
             #R${rerun_times}/StartTime/P${interval}
+
             #从2012-10-01T05:52:00Z起，每2秒中执行一次，共执行10次
             ```
 		* 目前我们大部分周期性作业的描述方式是 crontab 作业
