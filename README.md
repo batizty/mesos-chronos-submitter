@@ -37,6 +37,7 @@ mesos-chronos-submitter & chronos
     	Chronos使用一个很别扭的概念 "Epsilon"定义了一个时间段，保证如果当前作业在正确的时间窗口内如果没有调度作业，那么保证在Epsilon时间内能够调度作业
         ```bash
         epsilon : If Chronos misses the scheduled run time for any reason, it will still run the job if the time is within this interval. Epsilon must be formatted like an ISO 8601 Duration.```
+
 		* epsilon不满足我们的需求，需要改成重试的间隔时间
 
     * 作业依赖
