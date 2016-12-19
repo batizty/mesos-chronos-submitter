@@ -31,7 +31,7 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
 
   val conf_file = opt[File](
     name = "conf_file",
-    descr = "Job Config file, default should be .conf",
+    descr = "Job Config file",
     required = false,
     noshort = true
   )
@@ -94,18 +94,18 @@ class CommandLineConf(args: Seq[String]) extends ScallopConf(args) {
     }
   }
 
-  override def onError(e: Throwable): Unit = {
-    e match {
-      case Help(x) => this.printHelp(); sys.exit(0)
-      case m => showError(m.getMessage)
-    }
-  }
-
   def showError(e: String): Unit = {
     MyLogging.error(s"Parse Command Line Failed")
     MyLogging.error(s"$e")
     this.printHelp()
     sys.exit(-1)
+  }
+
+  override def onError(e: Throwable): Unit = {
+    e match {
+      case Help(x) => this.printHelp(); sys.exit(0)
+      case m => showError(m.getMessage)
+    }
   }
 
   def showDebug()(implicit _debug_mode: Boolean = false) = {
